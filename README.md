@@ -21,3 +21,4 @@ Growing unaffordability of housing has become one of the major challenges for me
 - Masonry veneer Masonery has been put into the house and it could be one of the significant variable that influences selling price.
   - **MasVnrType**: We can categorize na values into Unknown category.
   - **MasVnrArea**: Since we only have 6 missing values, we will impute those values with Median value.
+- **FireplaceQu** is categorical variable; I will make another category for null values. 'No Fireplace' replaces the missing values of FireplaceQu.
