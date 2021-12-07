@@ -11,10 +11,13 @@ Growing unaffordability of housing has become one of the major challenges for me
   - **GarageType**: This variable describes the location of garage. So, 'na' does make sense that there are no garage in the house. So, I will create new category No Garage.
   - **GarageYrBuilt**: This variable describes the year garage was built. So, I will make this variable the categorical variable. The data with na will go into 'Unknown' category.
   - **GarageFinish**: This categorical variable describes interior finishes of the garage. The 'na's indicating missing values do make sense here that it represents there are no garages. The data with na will go into 'No Garage' category.
-  - **GarageQual**: This categorical variable describes quality of the garage. The 'na' indicates the houses with no garage. The na values will go into No Garage category.
+  - **GarageQual**: This categorical variable describes quality of the garage. The 'na' indicates the houses with no garage. The na values will go into No Garage                         category.
 - Before analyzing Basement related variables, it seems all variables are related with having or not having basement in the house. Basements do have good relationship with the price of the house. Since our aim is the least deletion of data, we will consider all other data.
   - **BsmtExposure**: The 'na' values can be put into No Basement category.
   - **BsmtFinType2**: The 'na' values can be put into No Basement category.
   - **BsmtFinType1**: The 'na' values can be put into No Basement category.
   - **BsmtCond**: It indicates condtion of the basement. The 'na' values can be put into No Basement category.
   - **BsmtQual**: It indicates overall qualties of the basement. The 'na' values can be put into No Basement category.
+- Masonry veneer Masonery has been put into the house and it could be one of the significant variable that influences selling price.
+  - **MasVnrType**: We can categorize na values into Unknown category.
+  - **MasVnrArea**: Since we only have 6 missing values, we will impute those values with Median value.
