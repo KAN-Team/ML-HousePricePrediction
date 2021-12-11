@@ -17,11 +17,11 @@ def log_dataframe_info(dataframe, rows=20):
 def replace_with_most_frequent(dataframe, col=None):
     print("%s column Processing..." % col)
     print("[Log: Info] %s value_counts()" % col)
-    top_frequent_5 = dataframe[col].value_counts()
-    print(top_frequent_5.head(5))
+    top_frequent = dataframe[col].value_counts()
+    print(top_frequent.head(5))
     # Entered col has missing values which we're replacing with the most entered value.
-    most_freq_value = top_frequent_5[:1].idxmax()
-    dataframe[col].fillna(value=most_freq_value, inplace=True)
+    most_freq_value = top_frequent[:1].idxmax()
+    dataframe[col].fillna(most_freq_value, inplace=True)
     # Checking the column again if there are any other missing values.
     print("Number of NULL values in %s after processing: %d\n" % (col, dataframe[col].isnull().sum()))
 
