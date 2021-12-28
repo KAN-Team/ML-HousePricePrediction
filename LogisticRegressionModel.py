@@ -1,29 +1,37 @@
 import pandas as pd
-from matplotlib import pyplot as plt
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LogisticRegression
 import math
 
-df = pd.read_csv('Classification_Preprocessed_House_Data.csv')
+# load the data
+data = pd.read_csv('Classification_Preprocessed_House_Data.csv')
+print(data.head())
 
-print(df.head())
+X = data.iloc[:, 0:5]     # Features
+Y = data['PriceRate']     # Label
 
-x_train, x_test, y_train, y_test = train_test_split(df[['PriceRate']], df.PriceRate, test_size=0.2)
+X_train, X_test, y_train, y_test = train_test_split(X, Y, test_size=0.2, shuffle=True)
+print(X_train.shape)
 
-model = LogisticRegression()
-model.fit(x_train, y_train)
+# generate the model
+log_reg_model = LogisticRegression()
 
-y_preicted = model.predict(x_test)
-model.score(x_test, y_test)
+# train the model
+log_reg_model.fit(X_train, y_train)
 
-model.coef_     #w transpose
+# make prediction using the model
+predictions = log_reg_model.predict(X_test)
 
-model.intercept_    # B
+#log_reg_model.score(X_train, y_test)
+
+log_reg_model.coef_     #w transpose
+
+log_reg_model.intercept_    # B
 
 def sigmoid(x):
     return 1 / (1 + math.exp(-x))
 
 def prediction_function(x):
-    z = model.coef_ * x + model.intercept_
+    z = log_reg_model.coef_ * x + log_reg_model.intercept_
     y = sigmoid(z)
     return y

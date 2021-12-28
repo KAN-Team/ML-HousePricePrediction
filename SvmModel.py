@@ -11,16 +11,17 @@ print(data['PriceRate'])
 X = data.iloc[:, 0:5]     # Features
 Y = data['PriceRate']     # Label
 
+# divide data into training and testing
 X_train, X_test, y_train, y_test = train_test_split(X, Y, test_size=0.2, shuffle=True)
 
 # generate the model
-cls_model = SVC(kernel="linear")
+svm_model = SVC(kernel="linear")
 
 # train the model
-cls_model.fit(X_train, y_train)
+svm_model.fit(X_train, y_train)
 
-# predict the response
-predictions = cls_model.predict(X_test)
+# make prediction using the model
+predictions = svm_model.predict(X_test)
 print("accuracy:", metrics.accuracy_score(y_test, y_pred=predictions))
 
 # precision score
