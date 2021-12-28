@@ -5,22 +5,22 @@ from sklearn import metrics
 from sklearn.metrics import precision_score
 
 # load the data
-data = pd.read_csv('House_Data_Classification.csv')
+data = pd.read_csv('Classification_Preprocessed_House_Data.csv')
 print(data.describe())
 print(data.columns)
 
-X = data.copy()
-y = data['PriceRate']
+X = data.iloc[:, 0:5]     # Features
+Y = data['PriceRate']     # Label
 
 # divide data into training and testing
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=3)
+X_train, X_test, y_train, y_test = train_test_split(X, Y, test_size=0.2, random_state=3)
 
 # the decision tree model
 dec_tree_model = DecisionTreeClassifier() #here I can put the max depth for the tree
 print(dec_tree_model)
 
 # train the model
-dec_tree_model = dec_tree_model.fit(X_train, y_train)
+dec_tree_model.fit(X_train, y_train)
 
 # make prediction using the model
 predictions = dec_tree_model.predict(X_test)
@@ -31,6 +31,3 @@ dec_tree_model.predict_proba(X_test)
 
 # evaluate the model "accuracy score"
 print("DecisionTrees's Accuracy: ", metrics.accuracy_score(y_test, predictions))
-
-# evaluate the model "precision score"
-print("DecisionTrees's Precision: ", precision_score(y_test, predictions))
