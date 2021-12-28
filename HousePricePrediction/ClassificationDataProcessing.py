@@ -26,13 +26,13 @@ def replace_with_most_frequent(dataframe, col=None):
     print("Number of NULL values in %s after processing: %d\n" % (col, dataframe[col].isnull().sum()))
 
 
-def generate_cleaned_file(features, sale_price):
+def generate_cleaned_file(features, price_rate):
     print("================================================")
     print("...generate_cleaned_file starts...\n")
 
     dataframe = features
-    dataframe['SalePrice'] = sale_price.values
-    dataframe.to_csv("Preprocessed_House_Data.csv", index=0)
+    dataframe['PriceRate'] = price_rate.values
+    dataframe.to_csv("Classification_Preprocessed_House_Data.csv", index=0)
 
     print('Preprocessed House_Data file has been generated...\n')
     print("...generate_cleaned_file ends...")
@@ -42,13 +42,14 @@ def generate_cleaned_file(features, sale_price):
 def features_scaling(features):
     print("================================================")
     print("...features_scaling starts...\n")
-
+    a = 0
+    b = 2
     features = np.array(features)
     normalized_features = np.zeros((features.shape[0], features.shape[1]))
 
     for i in range(features.shape[1]):
-        normalized_features[:, i] = ((features[:, i] - min(features[:, i])) /
-                                     (max(features[:, i]) - min(features[:, i])))
+        normalized_features[:, i] = ((b-a) * (features[:, i] - min(features[:, i])) /
+                                     (max(features[:, i]) - min(features[:, i]))) + a
 
     features = pd.DataFrame(normalized_features)
 
@@ -64,17 +65,15 @@ def features_selection(dataframe):
     # Getting the features Correlation
     correlation = dataframe.corr()
     # Top 50% Correlation features with the SalePrice
-    top_features = correlation.index[abs(correlation['SalePrice'] > 0.5)]
+    top_features = correlation.index[abs(correlation[72] > 0.5)]
 
     # Showing the Correlation plot
     plt.subplots(figsize=(8, 8))
     top_correlation = dataframe[top_features].corr()
     sns.heatmap(top_correlation, annot=True)
-    # plt.show()
+    #plt.show()
 
-    # selected_features = ['OverallQual', YearRemodAdd, 'GrLivArea', 'TotalBsmtSF', 'GarageArea']
-    top_features = top_features.delete([2, 4, 6, 7, 8, 10])
-
+    top_features = top_features.delete(len(top_features)-1)
     print(top_features)
     selected_features = dataframe[top_features]
 
@@ -88,11 +87,12 @@ def label_encoding(dataframe):
     print("...label_encoding starts...\n")
     # print(dataframe.head(5))
 
-    columns = ['Utilities', 'Street', 'LotShape', 'MSZoning', 'LotConfig', 'LandSlope', 'Neighborhood', 'BldgType',
+    columns = ['Street', 'LotShape', 'Utilities', 'MSZoning', 'LotConfig', 'LandSlope', 'Neighborhood', 'BldgType',
             'HouseStyle', 'RoofStyle', 'RoofMatl', 'Exterior1st', 'Exterior2nd', 'MasVnrType', 'ExterQual',
             'ExterCond', 'Foundation', 'BsmtQual', 'BsmtCond', 'BsmtExposure', 'BsmtFinType1', 'BsmtFinType2',
             'Heating', 'HeatingQC', 'CentralAir', 'Electrical', 'KitchenQual', 'Functional', 'GarageType',
-            'GarageFinish', 'GarageQual', 'GarageCond', 'PavedDrive', 'SaleType', 'SaleCondition']
+            'GarageFinish', 'GarageQual', 'GarageCond', 'PavedDrive', 'SaleType', 'SaleCondition', 'MiscFeature2',
+               'PriceRate']
 
     for col in columns:
         lbl = LabelEncoder()
@@ -136,23 +136,25 @@ def solve_missing_values(dataframe):
     # BsmtExposure column Processing...
     replace_with_most_frequent(dataframe, col='BsmtExposure')
 
-    # BsmtQual column Processing...
-    replace_with_most_frequent(dataframe, col='BsmtQual')
+    # BsmtFinType1 column Processing...
+    replace_with_most_frequent(dataframe, col='BsmtFinType1')
 
     # BsmtCond column Processing...
     replace_with_most_frequent(dataframe, col='BsmtCond')
 
-    # BsmtFinType1 column Processing...
-    replace_with_most_frequent(dataframe, col='BsmtFinType1')
+    # BsmtQual column Processing...
+    replace_with_most_frequent(dataframe, col='BsmtQual')
 
     # MasVnrArea column Processing...
-    replace_with_most_frequent(dataframe, col='MasVnrArea')
+    #replace_with_most_frequent(dataframe, col='MasVnrArea')
+    # dataframe['MasVnrArea'].fillna(method='ffill', limit=3, inplace=True)
+    dataframe['MasVnrArea'].fillna(dataframe['MasVnrArea'].mean())
 
     # MasVnrType column Processing...
     replace_with_most_frequent(dataframe, col='MasVnrType')
 
     # TotRmsAbvGrd column Processing...
-    replace_with_most_frequent(dataframe, col='TotRmsAbvGrd')
+    #replace_with_most_frequent(dataframe, col='TotRmsAbvGrd')
 
     print("...solve_missing_values ends...")
     print("================================================\n")
@@ -165,13 +167,9 @@ def drop_unwanted_data(dataframe):
 
     # dropping id column
     print("[Log: Info] Removing unwanted columns...")
-    dataframe = dataframe.iloc[:, 1:78]
+    dataframe = dataframe.iloc[:, 1:79]
 
-    # dropping rows with high missing values which have more than 10% of total data missing or showing no values.
-    # print("Dropping rows with null percentages more than 10%...")
-    # dataframe.dropna(axis=0, how='any', thresh=70, inplace=True)
-    # log_dataframe_info(dataframe, rows=10)
-
+    #log_dataframe_info(dataframe, rows=14)
     # dropping columns with high missing values which have more than 40% of total data missing or showing no values.
     print("Dropping columns with null percentages more than 40%...")
     dataframe = dataframe.drop(['PoolQC', 'MiscFeature', 'Fence', 'FireplaceQu'], axis=1)
@@ -184,13 +182,13 @@ def drop_unwanted_data(dataframe):
     return dataframe
 
 
-def read_data():
+def read_data(dataset_name):
     print("================================================")
     print("read_data starts...\n")
 
     # load data
     print("[Log: Info] Reading House_Data.csv...")
-    dataframe = pd.read_csv('House_Data.csv')
+    dataframe = pd.read_csv(dataset_name)
 
     # display data info
     print("Data Original Shape: %s" % (dataframe.shape,))
@@ -203,16 +201,21 @@ def read_data():
     return dataframe
 
 
-def start_preprocessing():
-    df = read_data()
+def start_preprocessing(dataset_name):
+    print("================================================================================")
+    print("...Classification Data Processing starts...\n")
+    df = read_data(dataset_name=dataset_name)
     df = drop_unwanted_data(df)
     df = solve_missing_values(df)
     df = label_encoding(df)
-    fts = features_selection(df)
-    fts = features_scaling(fts)
-    generate_cleaned_file(fts, df['SalePrice'])
+    fts = features_scaling(df)
+    fts = features_selection(fts)
+    generate_cleaned_file(fts, df['PriceRate'])
+    print('cheap--> 0\nexpensive--> 1\nmoderate--> 2\n')
+    print("...Classification Data Processing ends...")
+    print("================================================================================\n")
     return fts
 
 
 if __name__ == "__main__":
-    start_preprocessing()
+    start_preprocessing(dataset_name='House_Data_Classification.csv')

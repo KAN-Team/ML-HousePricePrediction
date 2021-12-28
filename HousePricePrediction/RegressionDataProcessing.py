@@ -32,7 +32,7 @@ def generate_cleaned_file(features, sale_price):
 
     dataframe = features
     dataframe['SalePrice'] = sale_price.values
-    dataframe.to_csv("Preprocessed_House_Data.csv", index=0)
+    dataframe.to_csv("Regression_Preprocessed_House_Data.csv", index=0)
 
     print('Preprocessed House_Data file has been generated...\n')
     print("...generate_cleaned_file ends...")
@@ -184,13 +184,13 @@ def drop_unwanted_data(dataframe):
     return dataframe
 
 
-def read_data():
+def read_data(dataset_name):
     print("================================================")
     print("read_data starts...\n")
 
     # load data
     print("[Log: Info] Reading House_Data.csv...")
-    dataframe = pd.read_csv('House_Data.csv')
+    dataframe = pd.read_csv(dataset_name)
 
     # display data info
     print("Data Original Shape: %s" % (dataframe.shape,))
@@ -203,16 +203,20 @@ def read_data():
     return dataframe
 
 
-def start_preprocessing():
-    df = read_data()
+def start_preprocessing(dataset_name):
+    print("================================================================================")
+    print("...Regression Data Processing starts...\n")
+    df = read_data(dataset_name)
     df = drop_unwanted_data(df)
     df = solve_missing_values(df)
     df = label_encoding(df)
     fts = features_selection(df)
     fts = features_scaling(fts)
     generate_cleaned_file(fts, df['SalePrice'])
+    print("...Regression Data Processing ends...")
+    print("================================================================================\n")
     return fts
 
 
 if __name__ == "__main__":
-    start_preprocessing()
+    start_preprocessing(dataset_name='House_Data.csv')
