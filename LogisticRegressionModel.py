@@ -11,6 +11,7 @@ print(data.head())
 X = data.iloc[:, 0:5]     # Features
 Y = data['PriceRate']     # Label
 
+# divide data into training and testing
 X_train, X_test, y_train, y_test = train_test_split(X, Y, test_size=0.2, shuffle=True)
 print(X_train.shape)
 
