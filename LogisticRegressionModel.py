@@ -1,6 +1,7 @@
 import pandas as pd
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import confusion_matrix
 import math
 
 # load the data
@@ -22,11 +23,16 @@ log_reg_model.fit(X_train, y_train)
 # make prediction using the model
 predictions = log_reg_model.predict(X_test)
 
-#log_reg_model.score(X_train, y_test)
+# calculate the accuracy
+log_reg_model.score(X_train, y_test)
+print("accuracy:", log_reg_model.score(X_train, y_test))
 
-log_reg_model.coef_     #w transpose
+# make the confusion matrix
+confusion_matrix = confusion_matrix(y_test, predictions)
+print(confusion_matrix)
 
-log_reg_model.intercept_    # B
+# log_reg_model.coef_   ===> w transpose
+# log_reg_model.intercept_ ===> B
 
 def sigmoid(x):
     return 1 / (1 + math.exp(-x))
