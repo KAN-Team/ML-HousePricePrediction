@@ -13,8 +13,8 @@ start_preprocessing(dataset_name='House_Data_Classification.csv')
 
 
 data = pd.read_csv('Classification_Preprocessed_House_Data.csv')
-X = data.iloc[:, 0:2]    # Features
-Y = data.iloc[:, -1]     # Label
+X = data.iloc[:, :2]    # Features
+Y = data.iloc[:, -1]    # Label
 
 
 poly_start_time = time.time()
@@ -30,7 +30,10 @@ poly_end_time = time.time()
 predictions = poly_svm.predict(X_test)
 accuracy = metrics.accuracy_score(y_test, y_pred=predictions)*100
 
+poly_end_time_test = time.time()
+
 print("-----------------------------------------------------------\n")
 print("accuracy for polynomial classifier: {}%".format(accuracy))
 print("Training Time for polynomial classifier: {}s".format(poly_end_time - poly_start_time))
 print('MSE for polynomial classifier: ', metrics.mean_squared_error(np.asarray(y_test), predictions))
+

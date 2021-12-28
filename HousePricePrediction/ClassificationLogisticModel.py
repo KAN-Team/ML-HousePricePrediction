@@ -21,8 +21,8 @@ Y = data['PriceRate']     # Label
 logistic_start_time = time.time()
 
 X_train, X_test, y_train, y_test = train_test_split(X, Y, test_size=0.2, shuffle=True)
-C = 0.1
-log_reg_model = LogisticRegression(C=C, max_iter=20000, random_state=0).fit(X_train, y_train)
+C = 0.5
+log_reg_model = LogisticRegression(C=C, max_iter=1000, random_state=3).fit(X_train, y_train)
 pickle.dump(log_reg_model, open(saved_model_filename, 'wb'))
 
 logistic_end_time = time.time()

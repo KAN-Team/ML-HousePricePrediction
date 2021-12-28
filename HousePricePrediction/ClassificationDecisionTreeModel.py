@@ -14,15 +14,15 @@ start_preprocessing(dataset_name='House_Data_Classification.csv')
 
 data = pd.read_csv('Classification_Preprocessed_House_Data.csv')
 
-X = data.iloc[:, 0:2]     # Features
-Y = data['PriceRate']     # Label
+X = data.iloc[:, :2]     # Features
+Y = data.iloc[:, -1]     # Label
 X_train, X_test, y_train, y_test = train_test_split(X, Y, test_size=0.2, random_state=3, shuffle=True)
 
 
 DT_start_time = time.time()
 
 # the decision tree model
-dec_tree_model = DecisionTreeClassifier(max_depth=3, max_leaf_nodes=10).fit(X_train, y_train)
+dec_tree_model = DecisionTreeClassifier(max_depth=5, max_leaf_nodes=10).fit(X_train, y_train)
 pickle.dump(dec_tree_model, open(saved_model_filename, 'wb'))
 
 DT_end_time = time.time()
