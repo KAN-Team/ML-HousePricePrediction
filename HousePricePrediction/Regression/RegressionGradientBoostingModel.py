@@ -8,26 +8,38 @@ from sklearn.metrics import r2_score
 from sklearn.model_selection import train_test_split
 from RegressionDataPreProcessing import start_preprocessing
 
-# Load house data
 
-saved_model_filename = 'regression_saved_gradient_model.sav'
-start_preprocessing(dataset_name='House_Data_Regression.csv')
-data = pd.read_csv('Regression_Preprocessed_House_Data.csv')
+def read_data():
+    # Reading house data
+    dataframe = pd.read_csv('House_Data_Regression.csv')
+    X = dataframe.iloc[:, :-1]
+    Y = dataframe.iloc[:, -1]
 
-X = data.iloc[:, 0:5]     # Features
-Y = data['SalePrice']     # Label
+    # Splitting dataframe into train and test data
+    x_train, x_test, y_train, y_test = train_test_split(X, Y, test_size=0.2, shuffle=True)
+    start_preprocessing(x_train, y_train, x_test, y_test)
+
+
+# read_data()
+
+# Loading house data (train/test data)
+train_data = pd.read_csv('SavedData/Regression_Preprocessed_Train_House_Data.csv')
+test_data = pd.read_csv('SavedData/Regression_Preprocessed_Test_House_Data.csv')
+
+X_train = train_data.iloc[:, :-1]     # Features
+X_test = test_data.iloc[:, :-1]
+Y_train = train_data['SalePrice']     # Labels
+Y_test = test_data['SalePrice']
 
 # Apply GradientBoostingRegressor on the selected features
-gradient_boosting_start_time = time.time()
+gradient_boosting_start_time = time.time()  # alarm start time
 
-X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=0.2, shuffle=True)
-cls = GradientBoostingRegressor()
-cls.fit(X_train, Y_train)
-pickle.dump(cls, open(saved_model_filename, 'wb'))
-prediction = cls.predict(X_test)
+model = GradientBoostingRegressor()
+model.fit(X_train, Y_train)
+pickle.dump(model, open('SavedData/regression_gradient_boosting_model.sav', 'wb'))
+prediction = model.predict(X_test)
 
-time.sleep(1)
-gradient_boosting_end_time = time.time()
+gradient_boosting_end_time = time.time()    # alarm finish time
 
 runtime = gradient_boosting_end_time - gradient_boosting_start_time
 

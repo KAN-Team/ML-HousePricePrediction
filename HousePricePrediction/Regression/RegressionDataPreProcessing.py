@@ -1,10 +1,13 @@
 import pandas as pd
-import numpy as np
 import seaborn as sns
+import pickle
 from matplotlib import pyplot as plt
-from sklearn.preprocessing import LabelEncoder
+from sklearn.preprocessing import LabelEncoder, StandardScaler
+
+pd.options.mode.chained_assignment = None
 
 
+# ************************************************* #
 def log_dataframe_info(dataframe, rows=20):
     null_values = dataframe.isnull().sum().sort_values(ascending=False)
     null_percent = (dataframe.isnull().sum() / dataframe.isnull().count() * 100).sort_values(ascending=False)
@@ -14,79 +17,102 @@ def log_dataframe_info(dataframe, rows=20):
     print("Data Shape: %s\n" % (dataframe.shape,))
 
 
-def replace_with_most_frequent(dataframe, col=None):
-    print("%s column Processing..." % col)
+def get_most_frequent(dataframe, col=None):
     print("[Log: Info] %s value_counts()" % col)
     top_frequent = dataframe[col].value_counts()
     print(top_frequent.head(5))
-    # Entered col has missing values which we're replacing with the most entered value.
+    print()
     most_freq_value = top_frequent[:1].idxmax()
-    dataframe[col].fillna(most_freq_value, inplace=True)
-    # Checking the column again if there are any other missing values.
-    print("Number of NULL values in %s after processing: %d\n" % (col, dataframe[col].isnull().sum()))
+    return most_freq_value
 
 
-def generate_cleaned_file(features, sale_price):
+def balance_test_data(train_col, col, test_col):
+    most_frequent = get_most_frequent(train_col, col)
+    for idx, val in enumerate(test_col):
+        if val not in train_col[col].values:
+            test_col.values[idx] = most_frequent
+    return test_col
+# ************************************************* #
+
+
+def generate_cleaned_files(X_train, Y_train, X_test, Y_test):
     print("================================================")
-    print("...generate_cleaned_file starts...\n")
+    print("...generate_cleaned_files starts...\n")
 
-    dataframe = features
-    dataframe['SalePrice'] = sale_price.values
-    dataframe.to_csv("Regression_Preprocessed_House_Data.csv", index=0)
+    # Gathering Features with Target
+    train_data = pd.concat([X_train, Y_train], axis=1)
+    test_data = pd.concat([X_test, Y_test], axis=1)
 
-    print('Preprocessed House_Data file has been generated...\n')
+    train_data.to_csv('SavedData/Regression_Preprocessed_Train_House_Data.csv', index=0)
+    print('Preprocessed Train House_Data file has been generated -> \'SavedData\' Folder...')
+    test_data.to_csv('SavedData/Regression_Preprocessed_Test_House_Data.csv', index=0)
+    print('Preprocessed Test House_Data file has been generated -> \'SavedData\' Folder...\n')
+
     print("...generate_cleaned_file ends...")
     print("================================================\n")
 
 
-def features_scaling(features):
+def features_scaling(X_train, X_test):
     print("================================================")
     print("...features_scaling starts...\n")
 
-    features = np.array(features)
-    normalized_features = np.zeros((features.shape[0], features.shape[1]))
+    # fit on training data column
+    scaler = StandardScaler().fit(X_train)
 
-    for i in range(features.shape[1]):
-        normalized_features[:, i] = ((features[:, i] - min(features[:, i])) /
-                                     (max(features[:, i]) - min(features[:, i])))
+    # transform the training data columns
+    X_train = pd.DataFrame(scaler.transform(X_train), columns=X_train.columns, index=X_train.index)
 
-    features = pd.DataFrame(normalized_features)
+    # transform the testing data columns
+    X_test = pd.DataFrame(scaler.transform(X_test), columns=X_test.columns, index=X_test.index)
+
+    print("X_test after Standardization:")
+    print(X_test)
+
+    pickle.dump(scaler, open('SavedData/features_scaling.sav', 'wb'))
+    print("-> Scaled Weights Saved into \'SavedData/features_scaling.sav\'\n")
 
     print("...features_scaling ends...")
     print("================================================\n")
-    return features
+    return X_train, X_test
 
 
-def features_selection(dataframe):
+def features_selection(X_train, Y_train, X_test):
     print("================================================")
     print("...features_selection starts...\n")
 
-    # Getting the features Correlation
-    correlation = dataframe.corr()
+    # Gathering Features with Target
+    train_data = pd.concat([X_train, Y_train], axis=1)
+
+    # Getting the train data features Correlation
+    correlation = train_data.corr()
     # Top 50% Correlation features with the SalePrice
     top_features = correlation.index[abs(correlation['SalePrice'] > 0.5)]
 
     # Showing the Correlation plot
     plt.subplots(figsize=(8, 8))
-    top_correlation = dataframe[top_features].corr()
+    top_correlation = train_data[top_features].corr()
     sns.heatmap(top_correlation, annot=True)
     # plt.show()
 
-    # selected_features = ['OverallQual', YearRemodAdd, 'GrLivArea', 'TotalBsmtSF', 'GarageArea']
-    top_features = top_features.delete([2, 4, 6, 7, 8, 10])
+    # frequented selected_features = ['OverallQual', 'YearBuilt', 'TotalBsmtSF', 'GrLivArea', 'GarageArea']
+    top_features = top_features.delete(-1)
 
+    print("Top Features to be Selected:")
     print(top_features)
-    selected_features = dataframe[top_features]
 
+    pickle.dump(top_features, open('SavedData/selected_features.sav', 'wb'))
+    print("-> Selected Features Saved into \'SavedData/selected_features.sav\'\n")
+
+    selected_train_features = X_train[top_features]
+    selected_test_features = X_test[top_features]
     print("...features_selection ends...")
     print("================================================")
-    return selected_features
+    return selected_train_features, selected_test_features
 
 
-def label_encoding(dataframe):
+def label_encoding(X_train, X_test):
     print("================================================")
     print("...label_encoding starts...\n")
-    # print(dataframe.head(5))
 
     columns = ['Utilities', 'Street', 'LotShape', 'MSZoning', 'LotConfig', 'LandSlope', 'Neighborhood', 'BldgType',
             'HouseStyle', 'RoofStyle', 'RoofMatl', 'Exterior1st', 'Exterior2nd', 'MasVnrType', 'ExterQual',
@@ -94,128 +120,94 @@ def label_encoding(dataframe):
             'Heating', 'HeatingQC', 'CentralAir', 'Electrical', 'KitchenQual', 'Functional', 'GarageType',
             'GarageFinish', 'GarageQual', 'GarageCond', 'PavedDrive', 'SaleType', 'SaleCondition']
 
+    columns_lbl_encoder = {}
     for col in columns:
+        X_test[col] = balance_test_data(X_train, col, X_test[col])
         lbl = LabelEncoder()
-        lbl.fit(list(dataframe[col].values))
-        dataframe[col] = lbl.transform(list(dataframe[col].values))
+        lbl.fit(list(X_train[col].values))
+        X_train[col] = lbl.transform(list(X_train[col].values))
+        X_test[col] = lbl.transform(list(X_test[col].values))
+        columns_lbl_encoder[col] = lbl
 
+    pickle.dump(columns_lbl_encoder, open('SavedData/label_encoding.sav', 'wb'))
+
+    print("-> Encoding Data Saved into \'SavedData/label_encoding.sav\'\n")
     print("...label_encoding ends...")
     print("================================================\n")
-    return dataframe
+    return X_train, X_test
 
 
-def solve_missing_values(dataframe):
+def solve_missing_values(X_train, X_test):
     print("================================================")
     print("...solve_missing_values starts...\n")
 
-    # we start the preprocessing of data by looking out for missing values in each explanatory variables.
-    log_dataframe_info(dataframe)
+    X_train_numeric_idx = X_train.select_dtypes(include='number').columns
+    X_train_categoric_idx = X_train.select_dtypes('object').columns
 
-    # LotFrontage column Processing...
-    print("LotFrontage column Processing...")
-    # LotFrontage has 200 missing values which we're replacing with the previous used value in the same column.
-    dataframe['LotFrontage'].fillna(method='ffill', limit=3, inplace=True)
-    # Checking the 'LotFrontage' column again if there are any other missing values
-    print("Number of NULL values in LotFrontage after processing: %d\n" % dataframe['LotFrontage'].isnull().sum())
+    X_train_numeric = X_train[X_train_numeric_idx]
+    X_train_categoric = X_train[X_train_categoric_idx]
+    X_test_numeric = X_test[X_train_numeric_idx]
+    X_test_categoric = X_test[X_train_categoric_idx]
 
-    # GarageCond column Processing...
-    replace_with_most_frequent(dataframe, col='GarageCond')
+    columns_mean_values = {}
+    for col in X_train_numeric.columns:
+        col_mean = X_train_numeric[col].mean()
+        X_train_numeric[col].fillna(value=col_mean, inplace=True)
+        X_test_numeric[col].fillna(value=col_mean, inplace=True)
+        columns_mean_values[col] = col_mean
 
-    # GarageType column Processing...
-    replace_with_most_frequent(dataframe, col='GarageType')
+    for col in X_train_categoric.columns:
+        most_freq_value = get_most_frequent(X_train_categoric, col)
+        X_train_categoric[col].fillna(value=most_freq_value, inplace=True)
+        X_test_categoric[col].fillna(value=most_freq_value, inplace=True)
+        columns_mean_values[col] = most_freq_value
 
-    # GarageFinish column Processing...
-    replace_with_most_frequent(dataframe, col='GarageFinish')
+    # Save missing values replacement values of the train data
+    pickle.dump(columns_mean_values, open('SavedData/missing_values.sav', 'wb'))
 
-    # GarageQual column Processing...
-    replace_with_most_frequent(dataframe, col='GarageQual')
+    X_train = pd.concat([X_train_numeric, X_train_categoric], axis=1)
+    X_test = pd.concat([X_test_numeric, X_test_categoric], axis=1)
 
-    # BsmtFinType2 column Processing...
-    replace_with_most_frequent(dataframe, col='BsmtFinType2')
-
-    # BsmtExposure column Processing...
-    replace_with_most_frequent(dataframe, col='BsmtExposure')
-
-    # BsmtQual column Processing...
-    replace_with_most_frequent(dataframe, col='BsmtQual')
-
-    # BsmtCond column Processing...
-    replace_with_most_frequent(dataframe, col='BsmtCond')
-
-    # BsmtFinType1 column Processing...
-    replace_with_most_frequent(dataframe, col='BsmtFinType1')
-
-    # MasVnrArea column Processing...
-    replace_with_most_frequent(dataframe, col='MasVnrArea')
-
-    # MasVnrType column Processing...
-    replace_with_most_frequent(dataframe, col='MasVnrType')
-
-    # TotRmsAbvGrd column Processing...
-    replace_with_most_frequent(dataframe, col='TotRmsAbvGrd')
-
+    log_dataframe_info(X_train, rows=5)
+    print("-> Imputing Data Saved into \'SavedData/missing_values.sav\'\n")
     print("...solve_missing_values ends...")
     print("================================================\n")
-    return dataframe
+    return X_train, X_test
 
 
-def drop_unwanted_data(dataframe):
+def drop_useless_features(X_train, X_test):
     print("================================================")
-    print("...drop_unwanted_data starts...\n")
+    print("...drop_useless_features starts...\n")
 
     # dropping id column
-    print("[Log: Info] Removing unwanted columns...")
-    dataframe = dataframe.iloc[:, 1:78]
+    print("[Log: Info] Removing ID column...")
+    X_train = X_train.iloc[:, 1:]
+    X_test = X_test.iloc[:, 1:]
 
-    # dropping rows with high missing values which have more than 10% of total data missing or showing no values.
-    # print("Dropping rows with null percentages more than 10%...")
-    # dataframe.dropna(axis=0, how='any', thresh=70, inplace=True)
-    # log_dataframe_info(dataframe, rows=10)
+    # dropping columns with missing values more than 80% of total Train data or showing no values.
+    print("[Log: Info] Dropping features with null percentages more than 80%...")
+    # log_dataframe_info(X_train, rows=14)  # uncomment this line to show null values percentages...
+    X_train = X_train.drop(['PoolQC', 'MiscFeature', 'Fence'], axis=1)
+    X_test = X_test.drop(['PoolQC', 'MiscFeature', 'Fence'], axis=1)
+    print("Train Data Shape after columns removal: %s" % (X_train.shape,))
+    print("Test Data Shape after columns removal: %s\n" % (X_test.shape,))
 
-    # dropping columns with high missing values which have more than 40% of total data missing or showing no values.
-    print("Dropping columns with null percentages more than 40%...")
-    dataframe = dataframe.drop(['PoolQC', 'MiscFeature', 'Fence', 'FireplaceQu'], axis=1)
-    log_dataframe_info(dataframe, rows=14)
-
-    print("Data Shape after rows/columns removal: %s\n" % (dataframe.shape,))
-
-    print("...drop_unwanted_data ends...")
+    print("...drop_useless_features ends...")
     print("================================================\n")
-    return dataframe
+    return X_train, X_test
 
 
-def read_data(dataset_name):
-    print("================================================")
-    print("read_data starts...\n")
-
-    # load data
-    print("[Log: Info] Reading House_Data_Regression.csv...")
-    dataframe = pd.read_csv(dataset_name)
-
-    # display data info
-    print("Data Original Shape: %s" % (dataframe.shape,))
-    pd.set_option("Display.max_columns", None)
-    n = len(dataframe['Id'])
-    print("Examples Count: %d\n" % n)
-
-    print("read_data ends...")
-    print("================================================\n")
-    return dataframe
-
-
-def start_preprocessing(dataset_name):
+def start_preprocessing(X_train, Y_train, X_test, Y_test):
     print("================================================================================")
     print("...Regression Data Pre-processing starts...\n")
-    df = read_data(dataset_name)
-    df = drop_unwanted_data(df)
-    df = solve_missing_values(df)
-    df = label_encoding(df)
-    fts = features_selection(df)
-    fts = features_scaling(fts)
-    generate_cleaned_file(fts, df['SalePrice'])
+    X_train, X_test = drop_useless_features(X_train, X_test)
+    X_train, X_test = solve_missing_values(X_train, X_test)
+    X_train, X_test = label_encoding(X_train, X_test)
+    X_train, X_test = features_selection(X_train, Y_train, X_test)
+    X_train, X_test = features_scaling(X_train, X_test)
+    generate_cleaned_files(X_train, Y_train, X_test, Y_test)
     print("...Regression Data Pre-processing ends...")
     print("================================================================================\n")
-    return fts
 
 
 if __name__ == "__main__":
