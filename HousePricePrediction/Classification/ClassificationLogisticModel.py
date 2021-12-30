@@ -5,7 +5,7 @@ import pickle
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LogisticRegression
 from sklearn import metrics
-from ClassificationDataProcessing import start_preprocessing
+from ClassificationDataPreProcessing import start_preprocessing
 
 
 # load the data

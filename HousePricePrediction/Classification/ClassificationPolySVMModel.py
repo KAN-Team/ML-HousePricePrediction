@@ -5,7 +5,7 @@ import pickle
 from sklearn.model_selection import train_test_split
 from sklearn import metrics
 from sklearn import svm
-from ClassificationDataProcessing import start_preprocessing
+from ClassificationDataPreProcessing import start_preprocessing
 
 # load the data
 saved_model_filename = 'classification_saved_poly_model.sav'

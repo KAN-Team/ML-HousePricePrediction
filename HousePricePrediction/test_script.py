@@ -1,18 +1,18 @@
 import numpy as np
 import pandas as pd
 import pickle
-import ClassificationDataProcessing
-import RegressionDataProcessing
 from sklearn.metrics import r2_score
 from sklearn.metrics import accuracy_score
 from sklearn import metrics
+from HousePricePrediction.Classification import ClassificationDataPreProcessing
+from HousePricePrediction.Regression import RegressionDataPreProcessing
 
 
 def test_regression():
     loaded_gradient_model_filename = 'regression_saved_gradient_model.sav'
     loaded_ridge_model_filename = 'regression_saved_ridge_model.sav'
     dataset_name = 'House_Data_Regression.csv'
-    RegressionDataProcessing.start_preprocessing(dataset_name=dataset_name)
+    RegressionDataPreProcessing.start_preprocessing(dataset_name=dataset_name)
 
     print('\n================================================')
     print('...Regression Script starts...\n')
@@ -45,7 +45,7 @@ def test_classification():
     loaded_decision_tree_model_filename = 'classification_saved_decisionTree_model.sav'
     loaded_logistic_model_filename = 'classification_saved_logistic_model.sav'
     dataset_name = 'House_Data_Classification.csv'
-    ClassificationDataProcessing.start_preprocessing(dataset_name=dataset_name)
+    ClassificationDataPreProcessing.start_preprocessing(dataset_name=dataset_name)
 
     print('\n================================================')
     print('...Classification Script starts...\n')
