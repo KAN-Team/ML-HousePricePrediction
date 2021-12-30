@@ -11,7 +11,7 @@ from sklearn import metrics
 def test_regression():
     loaded_gradient_model_filename = 'regression_saved_gradient_model.sav'
     loaded_ridge_model_filename = 'regression_saved_ridge_model.sav'
-    dataset_name = 'House_Data.csv'
+    dataset_name = 'House_Data_Regression.csv'
     RegressionDataProcessing.start_preprocessing(dataset_name=dataset_name)
 
     print('\n================================================')
