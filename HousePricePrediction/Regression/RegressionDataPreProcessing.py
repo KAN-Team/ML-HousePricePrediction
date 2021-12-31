@@ -3,7 +3,6 @@ import seaborn as sns
 import pickle
 from matplotlib import pyplot as plt
 from sklearn.preprocessing import LabelEncoder, StandardScaler
-
 pd.options.mode.chained_assignment = None
 
 
@@ -106,7 +105,7 @@ def features_selection(X_train, Y_train, X_test):
     selected_train_features = X_train[top_features]
     selected_test_features = X_test[top_features]
     print("...features_selection ends...")
-    print("================================================")
+    print("================================================\n")
     return selected_train_features, selected_test_features
 
 
@@ -208,7 +207,3 @@ def start_preprocessing(X_train, Y_train, X_test, Y_test):
     generate_cleaned_files(X_train, Y_train, X_test, Y_test)
     print("...Regression Data Pre-processing ends...")
     print("================================================================================\n")
-
-
-if __name__ == "__main__":
-    start_preprocessing(dataset_name='House_Data_Regression.csv')

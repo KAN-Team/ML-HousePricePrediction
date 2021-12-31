@@ -5,42 +5,48 @@ from sklearn.metrics import r2_score
 from sklearn.metrics import accuracy_score
 from sklearn import metrics
 from HousePricePrediction.Classification import ClassificationDataPreProcessing
-from HousePricePrediction.Regression import RegressionDataPreProcessing
+from HousePricePrediction.Regression import RegressionTestPreProcessing
 
 
-def test_regression():
-    loaded_gradient_model_filename = 'regression_saved_gradient_model.sav'
-    loaded_ridge_model_filename = 'regression_saved_ridge_model.sav'
-    dataset_name = 'House_Data_Regression.csv'
-    RegressionDataPreProcessing.start_preprocessing(dataset_name=dataset_name)
-
+def tst_regression():
     print('\n================================================')
-    print('...Regression Script starts...\n')
+    print('...START: test_regression()...\n')
 
-    df = pd.read_csv('Regression_Preprocessed_House_Data.csv')
-    X = df.iloc[:, 0:5]  # Features
-    Y = df.iloc[:, -1]  # Label
-    print('The test sample length After Pre-processing: {}'.format(len(X)))
+    # Specifying Test Data
+    test_data_path = 'Regression/SavedData/Sample_Test_Data.csv'
+    # Reading Test Data
+    test_data = pd.read_csv(test_data_path)
+    # Start Preprocessing on Test Data
+    X_test, Y_test = RegressionTestPreProcessing.start_preprocessing(dataset=test_data)
 
-    print('...Loading models from Pickle file starts...\n')
-    loaded_gradient_model = pickle.load(open(loaded_gradient_model_filename, 'rb'))
-    loaded_ridge_model = pickle.load(open(loaded_ridge_model_filename, 'rb'))
+    print('[The test sample length After Pre-processing: {}]\n'.format(len(X_test)))
+
+    # Loading models from pickle
+    print('...Loading models from Pickle file starts...')
+    loaded_gradient_model = pickle.load(open('Regression/SavedData/regression_gradient_boosting_model.sav', 'rb'))
+    loaded_ridge_model = pickle.load(open('Regression/SavedData/regression_ridge_model.sav', 'rb'))
     print('...Loading models from Pickle file ends...\n')
 
-    predictions = loaded_gradient_model.predict(X)
-    print("Accuracy For GradientBoosting Model: {}%".format(r2_score(Y, predictions)*100))
-    print("MSE For GradientBoosting Model: {}".format(metrics.mean_squared_error(predictions, np.asarray(Y))))
+    # Prediction & Performance
+    prediction = loaded_gradient_model.predict(X_test)
+    print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
+    # Performance
+    print('GradientBoosting Model Mean Square Error:  ', metrics.mean_squared_error(np.asarray(Y_test), prediction))
+    print("GradientBoosting Model Accuracy(%): \t\t" + str(r2_score(Y_test, prediction) * 100) + "%")
     print("-------------------")
 
-    predictions = loaded_ridge_model.predict(X)
-    print("Accuracy For Ridge Model: {}%".format(r2_score(Y, predictions)*100))
-    print("MSE For Ridge Model: {}".format(metrics.mean_squared_error(predictions, np.asarray(Y))))
+    prediction = loaded_ridge_model.predict(X_test)
 
-    print('\n...Regression Script ends...')
-    print('================================================\n')
+    # Performance
+    print('Ridge Model Mean Square Error: ', metrics.mean_squared_error(np.asarray(Y_test), prediction))
+    print("Ridge Model Accuracy: \t\t\t" + str(r2_score(Y_test, prediction) * 100) + "%")
+    print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
+
+    print('\n...END: test_regression()...')
+    print('================================================')
 
 
-def test_classification():
+def tst_classification():
     loaded_poly_model_filename = 'classification_saved_poly_model.sav'
     loaded_decision_tree_model_filename = 'classification_saved_decisionTree_model.sav'
     loaded_logistic_model_filename = 'classification_saved_logistic_model.sav'
@@ -82,8 +88,8 @@ def test_classification():
 if __name__ == "__main__":
     choice = input("Do you want to test Regression or Classification (R, C): ")
     if choice == 'R' or choice == 'r':
-        test_regression()
+        tst_regression()
     elif choice == 'C' or choice == 'c':
-        test_classification()
+        tst_classification()
     else:
         print('Wrong Choice, Please Select R or C')
