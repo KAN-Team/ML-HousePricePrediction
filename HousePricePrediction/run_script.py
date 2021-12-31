@@ -23,23 +23,30 @@ def tst_regression():
 
     # Loading models from pickle
     print('...Loading models from Pickle file starts...')
-    loaded_gradient_model = pickle.load(open('Regression/SavedData/regression_gradient_boosting_model.sav', 'rb'))
+    loaded_gradient_model = pickle.load(open('Regression/SavedData/regression_boosting_model.sav', 'rb'))
+    loaded_forest_model = pickle.load(open('Regression/SavedData/regression_forest_model.sav', 'rb'))
     loaded_ridge_model = pickle.load(open('Regression/SavedData/regression_ridge_model.sav', 'rb'))
     print('...Loading models from Pickle file ends...\n')
 
     # Prediction & Performance
-    prediction = loaded_gradient_model.predict(X_test)
     print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
-    # Performance
-    print('GradientBoosting Model Mean Square Error:  ', metrics.mean_squared_error(np.asarray(Y_test), prediction))
-    print("GradientBoosting Model Accuracy(%): \t\t" + str(r2_score(Y_test, prediction) * 100) + "%")
+
+    # Gradient Boosting Regressor Performance
+    prediction = loaded_gradient_model.predict(X_test)
+    print('GradientBoosting Model Mean Square Error: \t', metrics.mean_squared_error(np.asarray(Y_test), prediction))
+    print("GradientBoosting Model Accuracy(%): \t\t " + str(r2_score(Y_test, prediction) * 100) + "%")
     print("-------------------")
 
-    prediction = loaded_ridge_model.predict(X_test)
+    # Random Forest Regressor Performance
+    prediction = loaded_forest_model.predict(X_test)
+    print('RandomForest Model Mean Square Error:\t\t', metrics.mean_squared_error(np.asarray(Y_test), prediction))
+    print("RandomForest Model Accuracy(%): \t\t\t " + str(r2_score(Y_test, prediction) * 100) + "%")
+    print("-------------------")
 
-    # Performance
-    print('Ridge Model Mean Square Error: ', metrics.mean_squared_error(np.asarray(Y_test), prediction))
-    print("Ridge Model Accuracy: \t\t\t" + str(r2_score(Y_test, prediction) * 100) + "%")
+    # Ridge Regressor Performance
+    prediction = loaded_ridge_model.predict(X_test)
+    print('Ridge Model Mean Square Error:\t\t\t\t', metrics.mean_squared_error(np.asarray(Y_test), prediction))
+    print("Ridge Model Accuracy: \t\t\t\t\t\t " + str(r2_score(Y_test, prediction) * 100) + "%")
     print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
 
     print('\n...END: test_regression()...')
