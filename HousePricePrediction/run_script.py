@@ -4,8 +4,8 @@ import pickle
 from sklearn.metrics import r2_score
 from sklearn.metrics import accuracy_score
 from sklearn import metrics
-from HousePricePrediction.Classification import ClassificationDataPreProcessing
-from HousePricePrediction.Regression import RegressionTestPreProcessing
+from Classification import ClassificationTestPreProcessing
+from Regression import RegressionTestPreProcessing
 
 
 def tst_regression():
@@ -54,41 +54,43 @@ def tst_regression():
 
 
 def tst_classification():
-    loaded_poly_model_filename = 'classification_saved_poly_model.sav'
-    loaded_decision_tree_model_filename = 'classification_saved_decisionTree_model.sav'
-    loaded_logistic_model_filename = 'classification_saved_logistic_model.sav'
-    dataset_name = 'House_Data_Classification.csv'
-    ClassificationDataPreProcessing.start_preprocessing(dataset_name=dataset_name)
-
     print('\n================================================')
-    print('...Classification Script starts...\n')
+    print('...START: test_classification()...\n')
 
-    df = pd.read_csv('Classification_Preprocessed_House_Data.csv')
-    X = df.iloc[:, :2]  # we only take the first two features.
-    Y = df.iloc[:, -1]
-    print('The test sample length After Pre-processing: {}'.format(len(X)))
+    # Specifying Test Data
+    test_data_path = 'Classification/House_Data_Classification.csv'
+    # Reading Test Data
+    test_data = pd.read_csv(test_data_path)
+    # Start Preprocessing on Test Data
+    X_test, Y_test = ClassificationTestPreProcessing.start_preprocessing(dataset=test_data)
+
+    print('[The test sample length After Pre-processing: {}]\n'.format(len(X_test)))
 
     print('...Loading models from Pickle file starts...\n')
-    loaded_poly_model = pickle.load(open(loaded_poly_model_filename, 'rb'))
-    loaded_decision_tree_model = pickle.load(open(loaded_decision_tree_model_filename, 'rb'))
-    loaded_logistic_model = pickle.load(open(loaded_logistic_model_filename, 'rb'))
+    loaded_decision_tree_model = pickle.load(open('Classification/SavedData/classification_decision_tree_model.sav', 'rb'))
+    loaded_poly_model = pickle.load(open('Classification/SavedData/classification_polynomial_svm_model.sav', 'rb'))
+    loaded_logistic_model = pickle.load(open('Classification/SavedData/classification_logistic_model.sav', 'rb'))
     print('...Loading models from Pickle file ends...\n')
 
-    predictions = loaded_poly_model.predict(X)
-    print("Accuracy For Polynomial SVM Model: {}%".format(accuracy_score(Y, predictions)*100))
-    print("MSE For Polynomial SVM Model: {}".format(metrics.mean_squared_error(predictions, np.asarray(Y))))
+    # Prediction & Performance
+    print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
+    # Performance
+    predictions = loaded_decision_tree_model.predict(X_test)
+    print("Accuracy For Decision Tree Model: {}%".format(accuracy_score(Y_test, predictions) * 100))
+    print("MSE For Decision Tree Model: {}".format(metrics.mean_squared_error(predictions, np.asarray(Y_test))))
     print("-------------------")
 
-    predictions = loaded_decision_tree_model.predict(X)
-    print("Accuracy For Decision Tree Model: {}%".format(accuracy_score(Y, predictions) * 100))
-    print("MSE For Decision Tree Model: {}".format(metrics.mean_squared_error(predictions, np.asarray(Y))))
+    predictions = loaded_poly_model.predict(X_test)
+    print("Accuracy For Polynomial SVM Model: {}%".format(accuracy_score(Y_test, predictions)*100))
+    print("MSE For Polynomial SVM Model: {}".format(metrics.mean_squared_error(predictions, np.asarray(Y_test))))
     print("-------------------")
 
-    predictions = loaded_logistic_model.predict(X)
-    print("Accuracy For Logistic Regression Model: {}%".format(accuracy_score(Y, predictions) * 100))
-    print("MSE For Logistic Regression Model: {}".format(metrics.mean_squared_error(predictions, np.asarray(Y))))
+    predictions = loaded_logistic_model.predict(X_test)
+    print("Accuracy For Logistic Regression Model: {}%".format(accuracy_score(Y_test, predictions) * 100))
+    print("MSE For Logistic Regression Model: {}".format(metrics.mean_squared_error(predictions, np.asarray(Y_test))))
+    print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
 
-    print('\n...Classification Script ends...')
+    print('\n...END: test_classification()...')
     print('================================================\n')
 
 
