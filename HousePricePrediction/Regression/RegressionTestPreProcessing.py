@@ -98,7 +98,7 @@ def start_preprocessing(dataset):
     Y_test = dataset.iloc[:, -1]
     X_test = drop_useless_features(X_test)
     X_test = solve_missing_values(X_test)
-    # X_test = label_encoding(X_test)
+    X_test = label_encoding(X_test)
     X_test = features_selection(X_test)
     X_test = features_scaling(X_test)
     print("...Regression Data Pre-processing ends...")

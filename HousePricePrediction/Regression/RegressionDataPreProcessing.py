@@ -23,14 +23,6 @@ def get_most_frequent(dataframe, col=None):
     print()
     most_freq_value = top_frequent[:1].idxmax()
     return most_freq_value
-
-
-def balance_test_data(train_col, col, test_col):
-    most_frequent = get_most_frequent(train_col, col)
-    for idx, val in enumerate(test_col):
-        if val not in train_col[col].values:
-            test_col.values[idx] = most_frequent
-    return test_col
 # ************************************************* #
 
 
@@ -119,11 +111,11 @@ def label_encoding(X_train, X_test):
             'Heating', 'HeatingQC', 'CentralAir', 'Electrical', 'KitchenQual', 'Functional', 'GarageType',
             'GarageFinish', 'GarageQual', 'GarageCond', 'PavedDrive', 'SaleType', 'SaleCondition']
 
+    all_possible_categories = pd.concat([X_train, X_test], axis=0)
     columns_lbl_encoder = {}
     for col in columns:
-        X_test[col] = balance_test_data(X_train, col, X_test[col])
         lbl = LabelEncoder()
-        lbl.fit(list(X_train[col].values))
+        lbl.fit(list(all_possible_categories[col].values))
         X_train[col] = lbl.transform(list(X_train[col].values))
         X_test[col] = lbl.transform(list(X_test[col].values))
         columns_lbl_encoder[col] = lbl
