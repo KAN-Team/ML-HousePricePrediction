@@ -1,38 +1,6 @@
 import pandas as pd
-import seaborn as sns
 import pickle
-from matplotlib import pyplot as plt
-from sklearn.preprocessing import LabelEncoder, StandardScaler
-
 pd.options.mode.chained_assignment = None
-
-
-# ************************************************* #
-def log_dataframe_info(dataframe, rows=20):
-    null_values = dataframe.isnull().sum().sort_values(ascending=False)
-    null_percent = (dataframe.isnull().sum() / dataframe.isnull().count() * 100).sort_values(ascending=False)
-    print("[Log: Info] NULL values percentages...")
-    null_values_percent = pd.concat([null_values, null_percent], axis=1, keys=['Total', 'Percent'])
-    print(null_values_percent.head(rows))
-    print("Data Shape: %s\n" % (dataframe.shape,))
-
-
-def get_most_frequent(dataframe, col=None):
-    print("[Log: Info] %s value_counts()" % col)
-    top_frequent = dataframe[col].value_counts()
-    print(top_frequent.head(5))
-    print()
-    most_freq_value = top_frequent[:1].idxmax()
-    return most_freq_value
-
-
-def balance_test_data(train_col, col, test_col):
-    most_frequent = get_most_frequent(train_col, col)
-    for idx, val in enumerate(test_col):
-        if val not in train_col[col].values:
-            test_col.values[idx] = most_frequent
-    return test_col
-# ************************************************* #
 
 
 def generate_cleaned_files(X_train, Y_train, X_test, Y_test):
