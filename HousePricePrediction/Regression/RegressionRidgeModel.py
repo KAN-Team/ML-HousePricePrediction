@@ -44,6 +44,8 @@ ridge_end_time = time.time()    # alarm finish time
 runtime = ridge_end_time - ridge_start_time
 
 # Performance
+print("\t~~~~~ Ridge Regressor ~~~~~")
 print('Mean Square Error: ', metrics.mean_squared_error(np.asarray(Y_test), prediction))
-print("Model Accuracy: \t" + str(r2_score(Y_test, prediction)*100) + "%")
-print(f"Runtime of Ridge regression is: {round(runtime, 2)} seconds.")
+print("Model Accuracy(%): \t" + str(r2_score(Y_test, prediction)*100) + "%")
+print(f"Train Runtime: \t\t{round(runtime, 2)} seconds.")
+print("~~~~  ~~~~~  ~~~~~  ~~~~~  ~~~~~  ~~~~~  ~~~~~  ~~~~~ ")

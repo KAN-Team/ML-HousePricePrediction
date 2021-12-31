@@ -36,7 +36,7 @@ gradient_boosting_start_time = time.time()  # alarm start time
 
 model = GradientBoostingRegressor()
 model.fit(X_train, Y_train)
-pickle.dump(model, open('SavedData/regression_gradient_boosting_model.sav', 'wb'))
+pickle.dump(model, open('SavedData/regression_boosting_model.sav', 'wb'))
 prediction = model.predict(X_test)
 
 gradient_boosting_end_time = time.time()    # alarm finish time
@@ -44,6 +44,8 @@ gradient_boosting_end_time = time.time()    # alarm finish time
 runtime = gradient_boosting_end_time - gradient_boosting_start_time
 
 # Performance
+print("~~~~~ Gradient Boosting Regressor ~~~~~")
 print('Mean Square Error: ', metrics.mean_squared_error(np.asarray(Y_test), prediction))
 print("Model Accuracy(%): \t" + str(r2_score(Y_test, prediction)*100) + "%")
-print(f"Runtime of Gradient Boosting Regressor is: {round(runtime, 2)} seconds.")
+print(f"Train Runtime: \t\t{round(runtime, 2)} seconds.")
+print("~~~~  ~~~~~  ~~~~~  ~~~~~  ~~~~~  ~~~~~  ~~~~~  ~~~~~ ")

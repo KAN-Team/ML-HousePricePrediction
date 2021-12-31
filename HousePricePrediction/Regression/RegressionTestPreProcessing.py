@@ -48,7 +48,7 @@ def features_selection(X_test):
 
 def label_encoding(X_test):
     print("================================================")
-    print("...label_encoding starts...\n")
+    print("...label_encoding starts...")
 
     columns_lbl_encoder = pickle.load(open('Regression/SavedData/label_encoding.sav', 'rb'))
 
