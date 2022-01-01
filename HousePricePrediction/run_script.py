@@ -67,27 +67,27 @@ def tst_classification():
     print('[The test sample length After Pre-processing: {}]\n'.format(len(X_test)))
 
     print('...Loading models from Pickle file starts...\n')
-    loaded_decision_tree_model = pickle.load(open('Classification/SavedData/classification_decision_tree_model.sav', 'rb'))
-    loaded_poly_model = pickle.load(open('Classification/SavedData/classification_polynomial_svm_model.sav', 'rb'))
     loaded_logistic_model = pickle.load(open('Classification/SavedData/classification_logistic_model.sav', 'rb'))
+    loaded_poly_model = pickle.load(open('Classification/SavedData/classification_polynomial_svm_model.sav', 'rb'))
+    loaded_decision_tree_model = pickle.load(open('Classification/SavedData/classification_decision_tree_model.sav', 'rb'))
     print('...Loading models from Pickle file ends...\n')
 
     # Prediction & Performance
     print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
     # Performance
-    predictions = loaded_decision_tree_model.predict(X_test)
-    print("Accuracy For Decision Tree Model: {}%".format(accuracy_score(Y_test, predictions) * 100))
-    print("MSE For Decision Tree Model: {}".format(metrics.mean_squared_error(predictions, np.asarray(Y_test))))
+    predictions = loaded_logistic_model.predict(X_test)
+    print('Logistic Regression Model Mean Square Error:\t {}'.format(metrics.mean_squared_error(predictions, np.asarray(Y_test))))
+    print("Logistic Regression Model Accuracy(%): \t\t\t {}%".format(accuracy_score(Y_test, predictions) * 100))
     print("-------------------")
 
     predictions = loaded_poly_model.predict(X_test)
-    print("Accuracy For Polynomial SVM Model: {}%".format(accuracy_score(Y_test, predictions)*100))
-    print("MSE For Polynomial SVM Model: {}".format(metrics.mean_squared_error(predictions, np.asarray(Y_test))))
+    print('Polynomial SVM Model Mean Square Error:\t\t\t {}'.format(metrics.mean_squared_error(predictions, np.asarray(Y_test))))
+    print("Polynomial SVM Model Accuracy(%): \t\t\t\t {}%".format(accuracy_score(Y_test, predictions) * 100))
     print("-------------------")
 
-    predictions = loaded_logistic_model.predict(X_test)
-    print("Accuracy For Logistic Regression Model: {}%".format(accuracy_score(Y_test, predictions) * 100))
-    print("MSE For Logistic Regression Model: {}".format(metrics.mean_squared_error(predictions, np.asarray(Y_test))))
+    predictions = loaded_decision_tree_model.predict(X_test)
+    print('Decision Tree Model Mean Square Error:\t\t\t {}'.format(metrics.mean_squared_error(predictions, np.asarray(Y_test))))
+    print("Decision Tree Model Accuracy(%): \t\t\t\t {}%".format(accuracy_score(Y_test, predictions) * 100))
     print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
 
     print('\n...END: test_classification()...')

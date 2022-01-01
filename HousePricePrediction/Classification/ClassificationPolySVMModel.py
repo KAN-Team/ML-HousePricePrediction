@@ -5,7 +5,7 @@ import pickle
 from sklearn.model_selection import train_test_split
 from sklearn import metrics
 from sklearn import svm
-from HousePricePrediction.Classification.ClassificationDataPreProcessing import start_preprocessing
+from Classification.ClassificationDataPreProcessing import start_preprocessing
 
 
 def read_data():
