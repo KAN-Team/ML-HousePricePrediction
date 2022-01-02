@@ -5,7 +5,7 @@ import pickle
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LogisticRegression
 from sklearn import metrics
-from Classification.ClassificationDataPreProcessing import start_preprocessing
+from ClassificationDataPreProcessing import start_preprocessing
 
 
 def read_data():
@@ -16,10 +16,12 @@ def read_data():
 
     # Splitting dataframe into train and test data
     x_train, x_test, y_train, y_test = train_test_split(X, Y, test_size=0.2, shuffle=True)
+    tst_data = pd.concat([x_test, y_test], axis=1)
+    tst_data.to_csv('SavedData/Sample_Test_Data.csv', index=0)
     start_preprocessing(x_train, y_train, x_test, y_test)
 
 
-#read_data()
+# read_data()
 
 # Loading house data (train/test data)
 train_data = pd.read_csv('SavedData/Classification_Preprocessed_Train_House_Data.csv')

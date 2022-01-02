@@ -58,7 +58,7 @@ def tst_classification():
     print('...START: test_classification()...\n')
 
     # Specifying Test Data
-    test_data_path = 'Classification/House_Data_Classification.csv'
+    test_data_path = 'Classification/SavedData/Sample_Test_Data.csv'
     # Reading Test Data
     test_data = pd.read_csv(test_data_path)
     # Start Preprocessing on Test Data

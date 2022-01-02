@@ -5,7 +5,7 @@ import pickle
 from sklearn.model_selection import train_test_split
 from sklearn import metrics
 from sklearn import svm
-from Classification.ClassificationDataPreProcessing import start_preprocessing
+from ClassificationDataPreProcessing import start_preprocessing
 
 
 def read_data():
@@ -19,7 +19,7 @@ def read_data():
     start_preprocessing(x_train, y_train, x_test, y_test)
 
 
-#read_data()
+# read_data()
 
 # Loading house data (train/test data)
 train_data = pd.read_csv('SavedData/Classification_Preprocessed_Train_House_Data.csv')
