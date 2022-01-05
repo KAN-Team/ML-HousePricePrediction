@@ -1,6 +1,16 @@
 # House Price Prediction
 Growing unaffordability of housing has become one of the major challenges for metropolitan cities around the world. In order to gain a better understanding of the commercialized housing market we are currently facing; we want to figure out what are the top influential factors of the housing price. Apart from the more obvious driving forces such as the inflation and the scarcity of land, there are also several variables that are worth looking into. The task here is to reach a model that can closely predict the pricing of a house.
 
+# Machine Learning Models 
+### Regression Models Used: 
+  1. Gradient Boosting Regressor
+  2. Random Forest Regressor
+  3. Ridge Regression.
+### Classification Models Used:
+  1. Polynomial SVM
+  2. Decision Tree
+  3. Logistic Regression.
+
 # Preprocessing
 Data preprocessing is a process of preparing the raw data and making it suitable for a machine learning model. It is the first and crucial step while creating a machine learning model.<br>
 Before we deep into our preprocessing techniques, there are a few things to clarify:
