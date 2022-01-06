@@ -49,7 +49,9 @@ We used **Standardization** which is a very effective technique that re-scales a
 
 Although Decision trees and ensemble methods do not require feature scaling to be performed as they are not sensitive to the variance in the data, we kept it as a general process to lower the headache that is going to happen in saving the data as a side effect.
 
-### Copyrights
+***
+
+#### Copyrights
 - Kareem S. Fathy - Kareem S. Ragab - Abanoub A. Azaab - Nada M. Abdelhamed - Nada S. Anies
 - KAN Org.
 - University of Ain Shams, Egypt
